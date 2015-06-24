@@ -1,0 +1,275 @@
+\section{Apuntes de clases}
+
+\subsection{De objetos, mensajes y variables}
+
+En el paradigma de objetos nos manejamos con las siguientes definiciones:
+
+\begin{itemize}
+ \item Programa: Conjunto de Objetos que colaboran entre sí enviandose mensajes. No hay instrucción, procedimientos, statements, nada. Todo son mensajes. No hay nada más primitivo que un Objeto y un Mensaje. 
+
+  \item Objeto: representación de un ente del dominio del problema. Lo que hay que modelar es la esencia del ente. Y esta va a estar dada por los mensajes que recibe. 
+  
+  \item Mensaje: no solo define el qué de un Objeto, sino el cómo. 
+
+  
+\end{itemize}
+
+Para que exista una colaboración tiene que haber un objeto emisor $E$ y otro receptor $R$. $E$ pone en un canal su mensaje y $R$ lo recibe, y ejecuta el método, que generalmente tiene el mismo nombre que el mensaje, para poder dar la respuesta. 
+
+Una \textbf{comunicación} tiene las características de ser:
+\begin{enumerate}[(1)]
+\item Dirigida (no Broadcast)
+\item Sincrónica (hasta que no me contestan el mensaje no puedo hacer otra cosa) 
+\item Siempre existe respuesta. Si no hay nada para devolver, se devuelve NIL. Un objeto que representa la nada. 
+\item Receptor desconoce al Emisor. 
+\end{enumerate}
+
+Hay otros que hicieron paradigmas con estas características, pero cambiando el (2) por Actors. Es decir, un objeto va encolando mensajes y los va contestando a medida que puede. Pero no se frena en uno. 
+
+También cambiaron la (4), agregando la Subjetividad. Este cambio se basa en la idea psicológica que una persona no contesta un mensaje de la misma manera si el emisor es otro. 
+
+Hay \textbf{mensajes} de tres tipos: 
+\begin{itemize}
+\item Unarios
+\item Binarios
+\item Keywords
+\end{itemize}
+
+Si tenemos esta colaboración: 
+\begin{verbatim}
+aDict at: aNumber+3 put: anArray size
+\end{verbatim}
+
+Se evalúa de izq a der, y primero unario, binario, keywords. Es decir:
+\begin{enumerate}
+\item \code{anArray size}
+\item \code{aNumber+3}
+\item \code{at: \_ put: \_}
+\end{enumerate}
+
+Si la colaboración fuere: 
+\begin{verbatim}
+aDict at: aNumber+3 put: otherNumber * 4
+\end{verbatim}
+
+La evaluación sería
+\begin{enumerate}
+ \item \code{aNumber+3}
+ \item \code{otherNumber*4}
+ \item \code{at: \_ put: \_}
+\end{enumerate}
+
+En esta colaboración: \code{4+3*5}. Se evalúa entonces primero \code{4+3} y después el \code{*5}. Asique el resultado es 35. 
+
+El paradigma define como única relación, la \textbf{Relación de conocimiento}. Es decir, que un objeto conoce otros objetos. Y es lo que en otros lenguajes denominamos como \textbf{Variable}. 
+
+Acá no se permite decir que un objeto tiene otro. El objeto \code{1/2} conoce al 1 como numerador, y al 2 como denominador. 
+Asique si nos metemos a la variable (que es un objeto también) denominador, este va a conocer a \code{value} que es 2, y a \code{name} que es ‘denominador’
+
+Ahora esta variable puede contestar algunos mensajes como value que va a devolver 2, también name que va a devolver ‘denominador’. Así mismo sabe interpretar el mensaje binario \code{:= aValue}. 
+
+Ahora hay que diferenciar dos tipos de mensajes. Porque el mensaje \code{:=} manda un Objeto a la Variable. En cambio el mensaje \code{aVariable denominador}, es un mensaje que se dirije al \code{value} de \code{aVariable}. 
+
+Asique hay en principio tenemos dos tipos de mensajes: 
+\begin{enumerate}
+ \item \code{receptor mensaje}
+ \item \code{variable := objeto}
+\end{enumerate}
+
+¿Porque la asignación no puede ser un mensaje? 
+Porque los mensajes siempre se mandan a lo que referencia el objeto, y la asignacion va dirigida al objeto en sí (a la variable). 
+Así el lenguaje define dos sintaxis: 
+\begin{verbatim}
+r m // receptor mensaje
+v := o // variable asignacion objet
+\end{verbatim}
+
+Hay otro tipo de variables también: las llamads \textbf{pseudovariables}. Es como una variable, pero no hay que definirla, siempre existe. Además no se le puede asignar nada. Por ejemplo, \code{self}. Que lo único que hace es referenciar un objeto. 
+Conceptualmente, esto es muy diferente de \code{this}. Este se refiere a una cosa, sin vida, solo estructura. Y \code{self} refiere a algo más vivo. 
+Otra pseudovariable es \code{thisContext}, que referencia al (objeto) contexto de ejecución, esa pila de stack que trackea el método que se está ejecutando.  
+
+Por ejemplo, dada la implementación del método
+\begin{verbatim}
++ sumando
+   thisContext method name // esto devuelve +
+   | nuevoDenominador | // defino una variable local
+   thisContext variableNamed: nuevoDenominador // esto devuelve el objeto 
+       referenciado por la variable local nuevoDenominador
+\end{verbatim}
+
+Para resolver el primer problema de diseño vamos a usar diagramas. (Ver cuaderno)
+
+\subsection{Polimorfismo}
+
+En Smalltalk, el objeto 1 y true no es lo mismo. 1 sabe responder el mensaje “+”. Asi como 0 no es false. 
+
+true y false son polimorficos respecto del mensaje not, and y or, 
+
+%& True & False
+%not & ^ false & ^ false
+%and: aBoolean & ^ aBoolean & ^ self
+%or: aBoolean & ^ self &^ aBoolean
+
+Hay que definir un objeto abstracto Boolean, con los metodos not, and, y or, que luego True y False van a implementar, y true y false van a ser instancias respectivas. Pero Boolean tienen que tener una implementacion propia de los metodos, asique lo que se hace es poner self subclassResponsability. Que es una excepcion si se ejecuta. 
+
+---------------
+
+Si true y false fueran instancia de una sola class Boolean, tendriamos q hacer una implementacion de not del estilo: 
+
+\begin{verbatim}
+not: 
+  if( self ) ^ false
+  ^ true
+\end{verbatim}
+
+Pero \code{if(..)} tendria que o bien convertirlo en objeto mensaje, o agregarlo al grupo de sintaxis de Smalltalk que tengo hasta ahora: 
+\begin{enumerate}
+\item \code{objeto mensaje}
+\item \code{variable := objeto}
+\item \code{[ … ] mensaje}
+\end{enumerate}
+
+Lo que hace al lenguaje mas cerrado. El programador no puede ver como esta hecho. 
+Smalltalk quiere mantener su sintaxis lo mas chica posible, para que sea mas customizable al programador, asique lo implemento como objeto mensaje. 
+
+\begin{verbatim}
+not: 
+  self ifTrue: [ ^ false ]
+  ^ true
+\end{verbatim}
+
+Pero \code{ifTrue} deberia ser un mensaje que Boolean pueda contestar, asique se implementa: 
+
+\begin{verbatim}
+ifTrue: aClosure
+  self ifTrue: ^ aClosure
+  ^ nil
+\end{verbatim}
+
+Regresion al infinitum! 
+\textbf{Conculsion: No se puede implementar algebra booleana con un solo objeto!}
+
+Asique volviendo al caso de un Booleano abstracto, \code{ifTrue} queda implementado asi 
+
+%& True & False
+%not & ^ false & ^ false
+%and: aBoolean & ^ aBoolean & ^ self
+%or: aBoolean & ^ self & ^ aBoolean
+%ifTrue: aClosure & ^ aClosure & ^ nil
+
+Y mantener una sintaxis minimalista. 
+
+------------------- 
+Como los if son problematicos (deja al programador la tarea de pensar el programa, cuando lo deberian hacer los objetos), queremos sacarlos y queremos implementarlo con polimorfismo
+
+\begin{verbatim}
+cond1: ifTrue: [^ aBlock1 value. ]
+cond2: ifTrue: [^ aBlock2 value. ]
+cond3: ifTrue: [^ aBlock3 value. ]
+self error: ‘...’
+\end{verbatim}
+
+?`Como sacamos un polimorfismo? 
+\begin{enumerate}
+\item Opcional (porque ya puede existir la jerarquia): Crear jerarquia polimorfica con 1 abstraccion x cada if
+\item Copiar closure de cada if a cada abstraccion usando mensajes polimorficos
+\item Ponerle nombre a abstraccion
+\item Poneler nombre a mensaje
+\item Opcional (porque si ya existe la jerarquia, pueden existir los objetos): buscar objeto polimorfico
+\item Reemplazar if x “objPolimorfico mensaje”
+\end{enumerate}
+
+\subsection{Lambdas vs. Closures vs. Full Closures}
+
+\subsubsection{Closure}
+
+\begin{verbatim}
+X >> m:
+  | a |
+  a:=1 
+  ^ [a := a + 1]
+\end{verbatim}
+
+\begin{verbatim}
+unX:= X new
+aClosure := unX m
+aClosure value. # 2
+aClosure value. # 3
+aClosure2 = unX m
+aClosure value. # 2 # se crea un objeto a en un contexto de ejecucion diferente
+\end{verbatim}
+
+Cuando se ejecuta un Closure, este bindea todas las variables que tiene al contexto de ejecucion que lo llamó. \code{[ .. ]} crea un nuevo objeto, y sabe que a \code{a} la busca en el contexto del que lo creo. 
+
+\subsubsection{Lambda (Lisp)}
+
+\begin{verbatim}
+X >> m: 
+  ^ [ a := a+1 ]
+\end{verbatim}
+
+Esto compila aunque a no este definido. 
+
+\begin{verbatim}
+aClosure value. # va a buscar en todos los contextos de ejecucion a a.
+\end{verbatim}
+
+\subsubsection{Full Closure (Smalltalk)}
+
+\begin{verbatim}
+X >> m
+  aClosure := [ ^ 10 ]
+  ^ aClosure value + 5
+
+aClosure value. # 10, porque nunca se llega a ejecutar “+ 5”. 
+  cuando se llamo a [ … ] salio del metodo. 
+\end{verbatim}
+
+\begin{verbatim}
+X>> m 
+  ^ [ ^ 10 ]
+
+aClosure value. # tira error. porque ya saliio del contexto de ejecucion cuando quiere volver a salir. 
+\end{verbatim}
+
+En los Full Closure, no solo bindea las variables al contexto de ejecución que lo llamó, sino que el return hace volver pero del contexto de ejecución padre. 
+
+Si no tuvieramos Full Closure, no podriamos implementar controles de flujo con mensajes. 
+Si no se tienen Full Closure, la sintaxis tiene que implementar el If, exit (para salir del control de flujo). 
+
+\subsubsection{While}
+?`Se puede hacer lo mismo con el While? S\'i. Pero, ?`c\'omo? 
+
+\code{[...]} en Smalltalk esto crea un objeto. 
+
+\begin{verbatim}
+a := 1
+(a < 3) whileTrue: [ a:= a + 1 ]
+\end{verbatim}
+
+Como cuando whileTrue termina, vuelve a ejecutar (a < 3), y por lo tanto tiene que ser un Closure. Por lo tanto whileTrue se implementa en BlockClosure:
+
+\begin{verbatim}
+BlockClosure>>whileTrue: aBlock
+  self value. # evaluo la condicion
+    ifTrue: [
+      aBlock value.
+      self whileTrue: aBlock
+    ]
+\end{verbatim}
+
+Un lenguaje que elimina colas de la recursion se llaman tail recursives. Se puede hacer aca? Si, porque puedo acceder a los contextos de ejecucion, y sacar los closures que vaya apilando ahi. 
+Asique como queda el whileTrue para que sea tail recursive, 
+
+\begin{verbatim}
+BlockClosure>>whileTrue: aBlock
+  self value. # evaluo la condicion
+  ifTrue: [
+    aBlock value.
+    thisContext stack pop. # saco el contexto de ejecucion
+    self whileTrue: aBlock
+  ]
+\end{verbatim}
+
+Aunque esto no termina andando en realidad. 
+
