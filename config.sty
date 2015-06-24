@@ -1,0 +1,67 @@
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage[spanish, activeacute]{babel}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage[width=15.5cm, left=3cm, top=2.5cm, height= 24.5cm]{geometry}
+\usepackage{graphicx}
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+\usepackage[all]{xy}
+\usepackage{multicol}
+\usepackage{multirow}
+\usepackage{subfig}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{cancel}
+\usepackage{float}
+\usepackage{xcolor}
+\usepackage{color,hyperref}
+\usepackage{epsfig}
+\usepackage{paralist}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{subfig}
+
+%%%%%%%%%%%%%% ALGUNAS MACROS %%%%%%%%%%%%%%
+% For \url{SOME_URL}, links SOME_URL to the url SOME_URL
+\providecommand*\url[1]{\href{#1}{#1}}
+
+% Same as above, but pretty-prints SOME_URL in teletype fixed-width font
+\renewcommand*\url[1]{\href{#1}{\texttt{#1}}}
+
+% Comando para poner el simbolo de Reales
+\newcommand{\real}{\hbox{\bf R}}
+
+\providecommand*\code[1]{\texttt{#1}}
+
+%uso: \ponerGrafico{file}{caption}{scale}{label}
+\newcommand{\ponerGrafico}[4]
+{\begin{figure}[H]
+	\centering
+	\subfloat{\includegraphics[scale=#3]{#1}}
+	\caption{#2} \label{fig:#4}
+\end{figure}
+}
+
+\renewcommand{\algorithmiccomment}[1]{\hfill #1}
+
+\setlength{\parindent}{0cm} % anulo la indentacion en todo el texto
+\newtheoremstyle{miestilo}
+	{1cm} % Space above
+	{} % Space below
+	{} % Body font
+	{} % Indent amount
+	{\bfseries} % Theorem head font
+	{\newline} % Punctuation after theorem head
+	{1cm} % Space after theorem head
+	{} % Theorem head spec (can be left empty, meaning `normal')
+
+\theoremstyle{miestilo}
+\newtheorem{definicion}{Definici\'on}
+\newtheorem{propiedad}{Propiedad}
+\newtheorem{teorema}{Teorema}
+\newtheorem{lema}{Lema}
+\newtheorem{corolario}{Corolario}
+\newtheorem{algoritmo}{Algoritmo}
