@@ -1,3 +1,17 @@
 \subsection{Null Pattern}
 
-Sacado del paper \emph{The Null Pattern Object} de Bobby Woolf. 
+Sacado del paper \emph{The Null Object Pattern} de Bobby Woolf. 
+
+La clave del \emph{Null Object Pattern} est\'a en crear una clase abstracta que define la interfaz de todos los objetos de este tipo, y un Null Object que es subclase de ella tambi\'en, pero que hace nada. 
+
+\subsubsection*{Uso} 
+
+El Null Object pattern se usa cuando: 
+
+\begin{itemize}
+ \item un objeto requiere un colaborador. El Null Object pattern no introduce esta colaboraci\'on, sino que usa la colaboraci\'on que ya existe. 
+ \item algunas instancias del colaborador deban hacer nada. 
+ \item vos quer\'es que los clientes puedan diferenciar entre un colaborador que tiene un comportamiento real contra el que no hace nada. De esta manera te evitas que el cliente est\'e chequeando por nil o alg\'un valor especial. 
+ \item reusar el comportamiento nulo para todos los usuarios que lo necesiten de manera consistente.
+ \item todo el comportamiento que se requiera para hacer nada est\'a encapsulado dentor de la clase del colaborador. 
+\end{itemize}

@@ -1,3 +1,28 @@
 \subsection{Object Recursion}
 
 Sacado del paper \emph{The Object Recursion Pattern} de Bobby Woolf. 
+
+El algoritmo de comparaci\'on en donde un objeto se compara con otro para saber si son iguales, y le pide a cada una de sus partes que se compare con su par en el otro objeto, es un ejemplo de \emph{Object Recursion}. La implementaci\'on de un mensaje recursivo, que uno manda luego a uno o varios de otros objetos relacionados, y as\'i sucesivamente, hasta que eventualmente llega a un objeto que sabe responderlo nativamente y devuelve el resultado. 
+
+\subsubsection*{Claves}
+Un sistema que incorpora \emph{Object Recursion pattern}  tiene las siguientes caracter\'isticas:
+
+\begin{itemize}
+ \item Dos clases polim\'orficas, una que maneja el mensaje de manera recursiva (Recurser) y otro que la maneja sin recursi\'on (Terminator). 
+ \item Un mensaje separado, usualmente en una tercera clase que no es polim\'orfica con las otras dos, que inicia la ejecuci\'on (Initiator). 
+\end{itemize}
+
+\subsubsection*{Uso}
+Hay que usar \emph{Object Recurrsion} cuando: 
+
+\begin{itemize}
+ \item passing a message through a linked structure where the ultimate destination is unknown. 
+ \item brodcasting a message to all nodes in part of a linked structure. 
+ \item distributing a behavior's responsibility throughout a linked structure. 
+\end{itemize}
+
+\subsubsection*{Consecuencias}
+
+\textbf{Ventajas}: procesamiento distribuido, responsabilidad flexible, flexibilidad en cuanto a roles, mejora encapsulamiento. 
+
+\textbf{Desventajas}: acompleja la programaci\'on. 

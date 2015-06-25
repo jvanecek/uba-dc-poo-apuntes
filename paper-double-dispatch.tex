@@ -1,3 +1,31 @@
 \subsection{Double Dispatch}
 
 Sacado del paper \emph{Arithmetic and Double Dispatching in Smalltalk-80} de Kurt J. Hebel and Ralph E. Johnson. 
+
+El \emph{Double-Dispatch} es un mecanismo en Smalltalk para ejecutar m\'etodos basados tanto en la clase del emisor como del receptor. Dan Ingalls lo llamaba m\'ultiple polimorfismo. 
+
+En general, el m\'etodo double-dispatch para un mensaje \code{op} es
+
+\begin{verbatim}
+ReceiverClass>>op argument:
+  ^ argument opWordFromReceiverClass: self.
+\end{verbatim}
+
+Donde \code{op} generalmente es \code{+},\code{-},\code{*},\code{/} o \code{=}, y su \code{opWord} asociada es \code{sum}, \code{difference}, \code{product}, \code{quotient} o \code{equal} respectivamente. Por ejemplo, 
+
+\begin{verbatim}
+Fraction>>* aNumber:
+  ^ aNumber productFromFraction: self.
+\end{verbatim}
+
+Esto implica que todas las subclases de \code{Number} deben poder contestar el mensaje \code{productFromFraction}. Pero esto hace que si tenemos $n$ clases, para el mensaje \code{*} s\'olo, debamos implementar en el peor de los casos $n^2$ m\'etodos. Para reducir este n\'umero hay que aprovechar la herencia, y tratar de delegar la implementaci\'on a las clases padres. 
+
+Hay principalmente tres categor\'ias de m\'etodos double-dispatch:
+
+\begin{enumerate}
+ \item Los que mandan mensajes a sus argumentos
+ \item Los que heredan de la superclase del argumento
+ \item Los \'ultimos m\'etodos que hacen realmente el trabajo. 
+\end{enumerate}
+
+Otra alternativa para implementar operaciones aritm\'eticas es \emph{coercion}, que si bien las operaciones para n\'umeros complejos y reales se puede implementar facilmente, no es as\'i para las operaciones con matrices. 
