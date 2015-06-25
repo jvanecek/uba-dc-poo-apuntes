@@ -76,7 +76,7 @@ cond3: ifTrue: [^ aBlock3 value. ]
 self error: ‘...’
 \end{verbatim}
 
-\subsubsection{?`Como sacamos IFs, en pro de polimorfismo?} 
+\subsubsection{?`C\'omo sacamos IFs, en pro de polimorfismo?} 
 
 Hay una heur\'istica y consiste en seguir los siguientes pasos:
 \begin{enumerate}
@@ -97,3 +97,14 @@ CtaBancaria>>withdrawl: anAmount
 \end{verbatim}
 
 En este caso \code{balance-anAmount} es un n\'umero, y no pertenece al dominio del mundo bancario. 
+
+\subsubsection{?`C\'omo sacamos c\'odigo repetido?}
+
+Este es un caso general del anterior. Para tener un buen dise\~no, no tiene que haber c\'odigo repetido. Asique cuando lo encontramos, se pueden seguir los siguientes pasos para abstraerlos en un m\'etodo: 
+
+\begin{enumerate}\itemsep-0.3em
+ \item Hacer una copia contextualizada de lo que est\'a repetido. 
+ \item Parametrizar lo que cambia. 
+ \item Ponerle nombre al anterior. 
+ \item Cambiar todo el c\'odigo repetido con el nuevo mensaje con los par\'ametros adecuados. 
+\end{enumerate}

@@ -75,15 +75,21 @@ Asique hay en principio tenemos dos tipos de mensajes:
 \end{enumerate}
 
 ¿Porque la asignación no puede ser un mensaje? 
+
 Porque los mensajes siempre se mandan a lo que referencia el objeto, y la asignacion va dirigida al objeto en sí (a la variable). 
+
 Así el lenguaje define dos sintaxis: 
+
 \begin{verbatim}
 r m // receptor mensaje
 v := o // variable asignacion objet
 \end{verbatim}
 
+\subsubsection{Pseudovariables}
+
 Hay otro tipo de variables también: las llamads \textbf{pseudovariables}. Es como una variable, pero no hay que definirla, siempre existe. Además no se le puede asignar nada. Por ejemplo, \code{self}. Que lo único que hace es referenciar un objeto. 
 Conceptualmente, esto es muy diferente de \code{this}. Este se refiere a una cosa, sin vida, solo estructura. Y \code{self} refiere a algo más vivo. 
+
 Otra pseudovariable es \code{thisContext}, que referencia al (objeto) contexto de ejecución, esa pila de stack que trackea el método que se está ejecutando.  
 
 Por ejemplo, dada la implementación del método
@@ -96,3 +102,52 @@ Por ejemplo, dada la implementación del método
 \end{verbatim}
 
 %Para resolver el primer problema de diseño vamos a usar diagramas. (Ver cuaderno)
+
+\code{super} es otra pseudovariable, y que es la superclase de la clase del objeto que lo ejecuta. Sin embargo, referencia al mismo objeto que \code{self}, ie, \code{super = self}.
+
+La diferencia es que si le mando un mensaje a \code{self}, este va a buscar el m\'etodo en el protocolo de su clase y despu\'es a sus superclases. Si se lo mando a \code{super}, va a empezar a buscarlo desde el protocolo de su superclase. 
+
+\subsubsection{Iguales vs. Id\'enticos}
+
+\begin{table}[H]
+ \begin{tabular}{|l| m{6cm} | m{6cm} |}\hline
+   & Id\'enticos & Iguales \\\hline 
+  Definici\'on & Dos objetos son id\'enticos si son el mismo (misma posici\'on de memoria). & Dos objetos son iguales si representan lo mismo. \\\hline
+  Mensaje & \code{\#==} & \code{\#=} \\\hline
+  Ejemplos & \specialcell{\code{1 == 1 \# true}\\ \code{1 == 1.0 \# false}} & \specialcell{\code{1 = 1 \# true}\\ \code{1 = 1.0 \# true}} \\\hline
+  Uso & Solo si nos interesa el dominio computable (poco com\'un) & Cuando nos interesa el dominio del problema (casi siempre). Si se implementa, hay que cambiar necesariamente la funci\'on \code{hash} (dos objetos iguales tienen el mismo hash).
+ \\\hline\end{tabular}
+\end{table}
+
+\subsubsection{Method LookUp}
+
+Cuando un objeto recibe un mensaje, tiene que saber si lo puede contestar o no. Para ello ejecuta el m\'etodo lookup (que siempre est\'a implementado) para que busca en su clase la definic\'on del mismo, y si lo encuentra ejecuta su m\'etodo, y si no dice que no lo entiende. Un pseudoc\'odigo de este procedimiento es el siguiente: 
+
+\begin{enumerate}\itemsep-0.3em
+ \item Un objeto \code{O} recibe un mensaje \code{m}.
+ 
+  \code{O m}
+ 
+ \item Obtengo la clase del objeto
+ 
+  \code{class := O class}
+  
+ \item Busco el m\'etodo del mensaje \code{m} en el protocolo de la clase
+ 
+  \code{method := class methodDictionary at: m ifAbsent: [nil]}
+  
+ \item Si lo encontr\'e, lo devuelvo
+ 
+  \code{method notNil ifTrue: [\^{} method]}
+  
+ \item Si no lo encontr\'e, busco el m\'etodo en su superclase. 
+ 
+  \code{class := class superclass}
+  
+ \item Si no hay una superclase, significa que no sabe contestar el mensaje.
+  
+  \code{class isNil ifTrue: [ O doesNotUnderstand: m ]}
+  
+ \item Si hay superclase, vuelvo al paso 3. 
+ 
+\end{enumerate}

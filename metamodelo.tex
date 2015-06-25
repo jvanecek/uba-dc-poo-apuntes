@@ -17,6 +17,10 @@
 \label{fig:test}
 \end{figure}
 
+Notemos que en el modelo b\'asico, todos los objetos son instancias de una sola clase. Todos comparten el mismo protocolo, ie, contestan los mismos mensajes. Esto es un problema, porque no podemos hacer mensajes exclusivos para distintos objetos. El objeto \code{Date} puede contestar el mensaje \code{today}, que un numero no puede. 
+
+Por eso surge el segundo metamodelo. Para implementar distintos protocolos a cada clase y que cada objeto tenga su comportamiento. 
+
 \begin{figure}[H]
   \begin{center}
   \includegraphics[height=300px]{images/metamodelo_smalltalk.pdf}
@@ -65,7 +69,7 @@
 	Original error: MessageNotUnderstood: ProtoObject>>inspect.
 	\end{verbatim}
 
-	?`Tiene algo que ver? No, simplemente que \code{ProtoObject} no est\'a preparado para ser debugeado, por eso es que no se puede mensajear dentro de Pharo. 
+	?`Tiene algo que ver? No, simplemente que \code{ProtoObject} no est\'a preparado para ser debugeado, por eso es que no se puede mensajear dentro de Pharo. Esta clase surgi\'o en Pharo para hacer cosas como inspectores y m\'aquinas virtuales. 
     
   \end{enumerate}
 

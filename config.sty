@@ -23,6 +23,7 @@
 \usepackage{caption}
 \usepackage{subcaption}
 \usepackage{subfig}
+\usepackage{array}
 
 %%%%%%%%%%%%%% ALGUNAS MACROS %%%%%%%%%%%%%%
 % For \url{SOME_URL}, links SOME_URL to the url SOME_URL
@@ -65,3 +66,6 @@
 \newtheorem{lema}{Lema}
 \newtheorem{corolario}{Corolario}
 \newtheorem{algoritmo}{Algoritmo}
+
+\newcommand{\specialcell}[2][l]{%
+  \begin{tabular}[#1]{@{}l@{}}#2\end{tabular}}
