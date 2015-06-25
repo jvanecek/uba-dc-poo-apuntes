@@ -1,0 +1,99 @@
+
+\subsection{Polimorfismo}
+
+En Smalltalk, el objeto 1 y \code{true} no es lo mismo. 1 sabe responder el mensaje “+”. As\'i como 0 no es \code{false}. \code{true} y \code{false} son polim\'orficos respecto de los mensaje \code{not}, \code{and} y \code{or}. 
+
+\begin{table}[H]
+\begin{tabular}{|l|l|l|}\hline
+		& True & False \\\hline
+  \code{not} 		& \code{\^{} false} & \code{\^{} true} \\
+  \code{and: aBoolean}	& \code{\^{} aBoolean} & \code{\^{} self} \\
+  \code{or: aBoolean} 	& \code{\^{} self} & \code{\^{} aBoolean} \\\hline
+\end{tabular}
+\end{table}
+
+Hay que definir un objeto abstracto Boolean, con los metodos \code{not}, \code{and}, y \code{or}, que luego True y False van a implementar, y \code{true} y \code{false} van a ser instancias respectivas. Pero como Boolean tienen que tener una implementaci\'on propia de los m\'etodos, lo que se hace es poner \code{self subclassResponsability}, que si se ejecuta tira una excepci\'on. \\
+
+\textbf{?`Qu\'e pasar\'ia si true y false fueran instancias de una sola clase Boolean?}
+
+Entonces tendr\'iamos q hacer una implementaci\'on de \code{not} del estilo: 
+
+\begin{verbatim}
+not: 
+  if( self ) ^ false
+  ^ true
+\end{verbatim}
+
+Pero \code{if(..)} tendr\'ia que o bien convertirlo en \code{objeto mensaje}, o agregarlo al grupo de sintaxis de Smalltalk que ten\'iamos hasta ahora: 
+\begin{enumerate}
+\itemsep-0.3em
+\item \code{objeto mensaje}
+\item \code{variable := objeto}
+\item \code{[ … ] mensaje}
+\end{enumerate}
+
+Lo que hace al lenguaje m\'as cerrado, y adem\'as el programador no puede ver c\'omo esta hecho. Como Smalltalk quiere mantener su sintaxis lo m\'as chica posible, para que sea mas customizable al programador, se implementa como \code{objeto mensaje}. 
+
+\begin{verbatim}
+not: 
+  self ifTrue: [ ^ false ]
+  ^ true
+\end{verbatim}
+
+Pero \code{ifTrue} deber\'ia ser entonces un mensaje que Boolean pueda contestar, asique se implementa: 
+
+\begin{verbatim}
+ifTrue: aClosure
+  self ifTrue: ^ aClosure
+  ^ nil
+\end{verbatim}
+
+Regresi\'on al infinitum! 
+
+\textbf{Conculsi\'on: No se puede implementar \'algebra booleana con un solo objeto!}
+
+Asique volviendo al caso de un Booleano abstracto, \code{ifTrue} queda implementado asi 
+
+\begin{table}[H]
+ \begin{tabular}{|l|l|l|}\hline
+				& True & False \\\hline
+    \code{not} 			& \code{\^{} false} & \code{\^{} true} \\
+    \code{and: aBoolean}	& \code{\^{} aBoolean} & \code{\^{} self} \\
+    \code{or: aBoolean} 	& \code{\^{} self} & \code{\^{} aBoolean} \\
+    \code{ifTrue: aClosure} & \code{\^{} aClosure} & \code{\^{} nil} \\\hline
+ \end{tabular}
+
+\end{table}
+
+Y mantener una sintaxis minimalista. 
+
+Como los if son problematicos (deja al programador la tarea de pensar el programa, cuando lo deberian hacer los objetos), queremos sacarlos y queremos implementarlo con polimorfismo
+
+\begin{verbatim}
+cond1: ifTrue: [^ aBlock1 value. ]
+cond2: ifTrue: [^ aBlock2 value. ]
+cond3: ifTrue: [^ aBlock3 value. ]
+self error: ‘...’
+\end{verbatim}
+
+\subsubsection{?`Como sacamos IFs, en pro de polimorfismo?} 
+
+Hay una heur\'istica y consiste en seguir los siguientes pasos:
+\begin{enumerate}
+\itemsep-0.3em
+\item Opcional (porque ya puede existir la jerarquia): Crear jerarqu\'ia polim\'orfica con una abstracci\'on por cada if
+\item Copiar closure de cada if a cada abstracci\'on usando mensajes polim\'orficos
+\item Ponerle nombre a la abstracci\'on
+\item Ponerle nombre al mensaje
+\item Opcional (porque si ya existe la jerarqu\'ia, pueden existir los objetos): buscar objeto polim\'orfico
+\item Reemplazar if por “objPolimorfico mensaje”
+\end{enumerate}
+
+\textbf{!`IMPORTANTE!} Hay un l\'imite para sacar IFs: no tiene sentido sacar el if cuando los colaboradores que participan en la condici\'on no pertenecen al dominio del problema. Por ej, 
+
+\begin{verbatim}
+CtaBancaria>>withdrawl: anAmount
+  (balance-anAmount) < 0 ifTrue: [ tirar excepcion ]
+\end{verbatim}
+
+En este caso \code{balance-anAmount} es un n\'umero, y no pertenece al dominio del mundo bancario. 

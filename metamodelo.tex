@@ -1,4 +1,4 @@
-\section{Metamodelos}
+\subsection{Metamodelos}
 
 \begin{figure}[H]
 \centering
@@ -46,27 +46,30 @@
 \underline{Referencias}: Linea punteada significa ``Instancia de'', y Linea lisa ``Hereda de''.
 
 \begin{enumerate}
- \item Los objetos en azul (?`las metaclases?), solo tienen una instancia. No contestan al mensaje \texttt{new}. ?`Qui\'en hace la alocaci\'on por primera vez? 
+ \item Los objetos en azul (?`las metaclases?), solo tienen una instancia. No contestan al mensaje \code{new}. ?`Qui\'en hace la alocaci\'on por primera vez? 
  
- Si a una metaclase se le agregan variables de instancia que inicializo en su m\'etodo \texttt{initialize} pero luego las modifico, debo reinicializar la metaclase para que se apliquen los cambios a las variables. No es como el caso de las variables de instancia de una clase. 
+ Si a una metaclase se le agregan variables de instancia que inicializo en su m\'etodo \code{initialize} pero luego las modifico, debo reinicializar la metaclase para que se apliquen los cambios a las variables. No es como el caso de las variables de instancia de una clase. 
  
- \item Cuando se env\'ia \texttt{new} a cualquier objeto, el que aloca la memoria es \texttt{Behavior>>basicNew}. 
+ \item Cuando se env\'ia \code{new} a cualquier objeto, el que aloca la memoria es \code{Behavior>>basicNew}. 
   \begin{enumerate}
-    \item ?`Hace falta entonces dentro de cualquier implementaci\'on propia de \texttt{new} enviar la colaboraci\'on \texttt{super new} necesariamente??`Si no lo hago alguien se encarga de esto? 
-    \item Si es \texttt{Behavior} quien implementa la alocaci\'on, ?`qui\'en lo hace para \texttt{Object} y los que subclasifican de \'el? (El debugger no me deja meterme m\'as adentro del \texttt{self new initialize} de \texttt{Object})
+    \item Siempre que se implementa \code{new} en una subclase, hay que llamar primero a \code{super new} para hacer la alocaci\'on. 
     
-     \item \texttt{ProtoObject new} tira el siguiente error y se rompe todo: 
+    \item Si es \code{Behavior} quien implementa la alocaci\'on, ?`qui\'en lo hace para \code{Object} y los que subclasifican de \'el? 
+    
+    Cuando un objeto recibe el mensaje \code{new}, busca su implementaci\'on en el protocolo de su clase, si este no la tiene lo busca en su padre, y as\'i sucesivamente hasta eventualmente llegar a \code{Behavior} que s\'i lo tiene. 
+    
+    \item \code{ProtoObject new} tira el siguiente error y se rompe todo: 
 
 	\begin{verbatim}
 	*** System error handling failed ***
 	Original error: MessageNotUnderstood: ProtoObject>>inspect.
 	\end{verbatim}
 
-	?`Tiene algo que ver?
+	?`Tiene algo que ver? No, simplemente que \code{ProtoObject} no est\'a preparado para ser debugeado, por eso es que no se puede mensajear dentro de Pharo. 
     
   \end{enumerate}
 
- \item Enviarle la colaboraci\'on \texttt{superclass} a un objeto me devuelve lo que apunta la flecha lisa. Ej: 
+ \item Enviarle la colaboraci\'on \code{superclass} a un objeto me devuelve lo que apunta la flecha lisa. Ej: 
 \begin{verbatim}
 SmallInteger superclass
 >> Integer
@@ -74,7 +77,7 @@ Metaclass superclass
 >> ClassDescription
 \end{verbatim}
 
- \item Enviarle la colaboraci\'on \texttt{class} a un objeto me devuelve lo que apunta la flecha punteada. Ej: 
+ \item Enviarle la colaboraci\'on \code{class} a un objeto me devuelve lo que apunta la flecha punteada. Ej: 
 \begin{verbatim}
 SmallInteger class
 >> Smallinteger class
@@ -82,6 +85,7 @@ Integer class class
 >> Metaclass
 \end{verbatim}
   
- \item Enviar la colaboraci\'on \texttt{Metaclass new new} hace colgar Pharo. ?`Por qu\'e? ?`Es el \'unico objeto con el que pasa eso? 
+ \item Enviar la colaboraci\'on \code{Metaclass new new} hace colgar Pharo. ?`Por qu\'e? ?`Es el \'unico objeto con el que pasa eso? 
 
+ Casos border que est\'an mal implementados en Pharo. 
 \end{enumerate}

@@ -1,0 +1,98 @@
+
+\subsection{De objetos, mensajes y variables}
+
+En el paradigma de objetos nos manejamos con las siguientes definiciones:
+
+\begin{itemize}
+ \item[\textbf{Programa}:] conjunto de objetos que colaboran entre sí enviandose mensajes. No hay instrucción, procedimientos, statements, nada. Todo son mensajes. No hay nada más primitivo que un Objeto y un Mensaje. 
+
+ \item[\textbf{Objeto}:] representación de un ente del dominio del problema. Lo que hay que modelar es la esencia del ente. Y esta va a estar dada por los mensajes que recibe. 
+  
+ \item[\textbf{Mensaje}:] no solo define el qué de un Objeto, sino el cómo. 
+ 
+\end{itemize}
+
+Para que exista una \textbf{colaboración} tiene que haber un objeto emisor $E$ y otro receptor $R$. $E$ pone en un canal su mensaje y $R$ lo recibe, y ejecuta el método, que generalmente tiene el mismo nombre que el mensaje, para poder dar la respuesta. 
+
+Una \textbf{comunicación} tiene las características de ser:
+\begin{enumerate}\itemsep-0.3em
+\item Dirigida (no Broadcast)
+\item Sincrónica (hasta que no me contestan el mensaje no puedo hacer otra cosa) 
+\item Siempre existe respuesta. Si no hay nada para devolver, se devuelve NIL. Un objeto que representa la nada. 
+\item Receptor desconoce al Emisor. 
+\end{enumerate}
+
+Hay otros que hicieron paradigmas con estas características, pero cambiando el (2) por Actors. Es decir, un objeto va encolando mensajes y los va contestando a medida que puede. Pero no se frena en uno. 
+
+También cambiaron la (4), agregando la Subjetividad. Este cambio se basa en la idea psicológica que una persona no contesta un mensaje de la misma manera si el emisor es otro. 
+
+Hay \textbf{mensajes} de tres tipos: 
+\begin{itemize}\itemsep-0.3em
+\item Unarios: sin par\'ametros. Ej, \code{objeto mensaje}
+\item Binarios: con un par\'ametro. Ej, \code{objeto mensaje objeto1}
+\item Keywords: con varios par\'ametros. Ej, \code{objeto mensajeConParam1: objeto1 param2: objeto2 ...}
+\end{itemize}
+
+Si tenemos esta colaboración: 
+\begin{verbatim}
+aDict at: aNumber+3 put: anArray size
+\end{verbatim}
+
+Se evalúa de izq a der, y primero unario, binario, keywords. Es decir:
+\begin{enumerate}\itemsep-0.3em
+\item \code{anArray size}
+\item \code{aNumber+3}
+\item \code{at: \_ put: \_}
+\end{enumerate}
+
+Si la colaboración fuere: 
+\begin{verbatim}
+aDict at: aNumber+3 put: otherNumber * 4
+\end{verbatim}
+
+La evaluación sería
+\begin{enumerate}\itemsep-0.3em
+ \item \code{aNumber+3}
+ \item \code{otherNumber*4}
+ \item \code{at: \_ put: \_}
+\end{enumerate}
+
+El resultado de esta la colaboración \code{4+3*5} es 35, porque se evalúa primero \code{4+3} y después el \code{*5}
+
+El paradigma define como única relación, la \textbf{Relación de conocimiento}. Es decir, que un objeto conoce otros objetos. Y es lo que en otros lenguajes denominamos como \textbf{Variable}. 
+
+Acá no se permite decir que un objeto tiene otro. El objeto \code{1/2} conoce al 1 como numerador, y al 2 como denominador. 
+Asique si nos metemos a la variable (que es un objeto también) denominador, este va a conocer a \code{value} que es 2, y a \code{name} que es ‘denominador’
+
+Ahora esta variable puede contestar algunos mensajes como value que va a devolver 2, también name que va a devolver ‘denominador’. Así mismo sabe interpretar el mensaje binario \code{:= aValue}. 
+
+Ahora hay que diferenciar dos tipos de mensajes. Porque el mensaje \code{:=} manda un Objeto a la Variable. En cambio el mensaje \code{aVariable denominador}, es un mensaje que se dirije al \code{value} de \code{aVariable}. 
+
+Asique hay en principio tenemos dos tipos de mensajes: 
+\begin{enumerate}
+ \item \code{receptor mensaje}
+ \item \code{variable := objeto}
+\end{enumerate}
+
+¿Porque la asignación no puede ser un mensaje? 
+Porque los mensajes siempre se mandan a lo que referencia el objeto, y la asignacion va dirigida al objeto en sí (a la variable). 
+Así el lenguaje define dos sintaxis: 
+\begin{verbatim}
+r m // receptor mensaje
+v := o // variable asignacion objet
+\end{verbatim}
+
+Hay otro tipo de variables también: las llamads \textbf{pseudovariables}. Es como una variable, pero no hay que definirla, siempre existe. Además no se le puede asignar nada. Por ejemplo, \code{self}. Que lo único que hace es referenciar un objeto. 
+Conceptualmente, esto es muy diferente de \code{this}. Este se refiere a una cosa, sin vida, solo estructura. Y \code{self} refiere a algo más vivo. 
+Otra pseudovariable es \code{thisContext}, que referencia al (objeto) contexto de ejecución, esa pila de stack que trackea el método que se está ejecutando.  
+
+Por ejemplo, dada la implementación del método
+\begin{verbatim}
++ sumando
+   thisContext method name // esto devuelve +
+   | nuevoDenominador | // defino una variable local
+   thisContext variableNamed: nuevoDenominador // esto devuelve el objeto 
+       referenciado por la variable local nuevoDenominador
+\end{verbatim}
+
+%Para resolver el primer problema de diseño vamos a usar diagramas. (Ver cuaderno)

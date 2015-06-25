@@ -1,0 +1,103 @@
+
+\subsection{Lambdas vs. Closures vs. Full Closures}
+
+\subsubsection{Closure}
+
+Cuando se ejecuta un Closure, este bindea todas las variables que tiene al contexto de ejecucion que lo llamó. 
+
+\begin{verbatim}
+X >> m:
+  | a |
+  a:=1 
+  ^ [a := a + 1]
+\end{verbatim}
+
+\begin{verbatim}
+unX:= X new
+aClosure := unX m
+aClosure value. # 2
+aClosure value. # 3
+aClosure2 = unX m
+aClosure2 value. # 2 # se crea un objeto a en un contexto de ejecucion diferente
+\end{verbatim}
+
+\code{[ .. ]} crea un nuevo objeto, y sabe que a \code{a} la busca en el contexto del que lo creo. 
+
+\subsubsection{Lambda (Lisp)}
+
+En los lamdas, las variables no se bindean al contexto de ejecuci\'on del que lo llama. Las definiciones de las variables se buscan en todos los contextos de ejecuci\'on. 
+
+\begin{verbatim}
+X >> m: 
+  ^ [ a := a+1 ]
+\end{verbatim}
+
+Esto compila aunque \code{a} no este definido. 
+
+\begin{verbatim}
+aClosure value. # va a buscar en todos los contextos de ejecucion a a.
+\end{verbatim}
+
+\subsubsection{Full Closure (Smalltalk)}
+
+
+En los Full Closure, no solo bindea las variables al contexto de ejecución que lo llamó, sino que el return dentro del mismo hace retornar del contexto de ejecución padre. 
+
+\begin{verbatim}
+X >> m
+  aClosure := [ ^ 10 ]
+  ^ aClosure value + 5
+
+aClosure value. # 10, porque nunca se llega a ejecutar +5. 
+  cuando se llamo a [ … ] salio del metodo. 
+\end{verbatim}
+
+\begin{verbatim}
+X>> m 
+  ^ [ ^ 10 ]
+
+aClosure value. # tira error. porque primero sale del contexto de ejecucion 
+  y despues quiere volver a salir desde dentro del [...]. 
+\end{verbatim}
+
+Si no tuvieramos Full Closure, no podr\'iamos implementar controles de flujo con mensajes. 
+
+Si no se tienen Full Closure, la sintaxis tiene que implementar el If, exit (para salir del control de flujo). 
+
+\subsubsection{While}
+?`Se puede hacer lo mismo con el While? S\'i. Pero, ?`c\'omo? 
+
+\code{[...]} en Smalltalk esto crea un objeto. 
+
+\begin{verbatim}
+a := 1
+(a < 3) whileTrue: [ a:= a + 1 ]
+\end{verbatim}
+
+Como cuando whileTrue termina, vuelve a ejecutar (\code{a < 3}), y por lo tanto tiene que ser un Closure. Por lo tanto whileTrue se implementa en BlockClosure:
+
+\begin{verbatim}
+BlockClosure>>whileTrue: aBlock
+  self value # evaluo la condicion
+    ifTrue: [
+      aBlock value.
+      self whileTrue: aBlock
+    ]
+\end{verbatim}
+
+Un lenguaje que elimina colas de la recursion se llaman tail recursives. ?`Se puede hacer aca? S\'i, porque puedo acceder a los contextos de ejecuci\'on, y sacar los closures que vaya apilando ah\'i. 
+
+Asi que el \code{whileTrue} para que sea tail recursive hay que escribirlo as\'i
+
+\begin{verbatim}
+BlockClosure>>whileTrue: aBlock
+  self value # evaluo la condicion
+    ifTrue: [
+      aBlock value.
+      thisContext stack pop. # saco el contexto de ejecucion
+      self whileTrue: aBlock
+    ]
+\end{verbatim}
+
+% Aunque esto no termina andando en realidad. 
+
