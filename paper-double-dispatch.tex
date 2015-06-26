@@ -7,14 +7,14 @@ El \emph{Double-Dispatch} es un mecanismo en Smalltalk para ejecutar m\'etodos b
 En general, el m\'etodo double-dispatch para un mensaje \code{op} es
 
 \begin{verbatim}
-ReceiverClass>>op argument:
+ReceiverClass>>op argument
   ^ argument opWordFromReceiverClass: self.
 \end{verbatim}
 
 Donde \code{op} generalmente es \code{+},\code{-},\code{*},\code{/} o \code{=}, y su \code{opWord} asociada es \code{sum}, \code{difference}, \code{product}, \code{quotient} o \code{equal} respectivamente. Por ejemplo, 
 
 \begin{verbatim}
-Fraction>>* aNumber:
+Fraction>>* aNumber
   ^ aNumber productFromFraction: self.
 \end{verbatim}
 
